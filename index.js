@@ -68,38 +68,36 @@ async function OCR() {
     console.log('safa');
 }
 
-//OCR();
+OCR();
 let text = '';
 for(let i of data.responses) {
-    console.log(i.fullTextAnnotation.text);
-    console.log(' ');
+    //console.log(i.fullTextAnnotation.text);
+    //console.log(' ');
     text += i.fullTextAnnotation.text
     text += ' '
 }
 app.get('/', (req, res) => res.send(text))
 
 
-const cwd = path.join(__dirname, '..');
-const download = () => {
-    const storage = new Storage({
-        keyFilename: 'APIKey.json',
-    });
-    const bucketName = 'pci_test';
-    const srcFileName = 'pdfoutput-1-to-18.json';
-    const destFileName = 'D:\gitHub projects\OCR dla PCI\OCRGoogle\package.json';
 
-    async function downloadJSONFile() {
-        const options = {
-            destination: destFileName,
-        };
+const storage = new Storage({
+    keyFilename: 'APIKey.json',
+    projectId: 'stable-sign-269418'
+});
+const bucketName = 'pci_test';
+const srcFileName = 'pdfoutput-1-to-18.json';
 
-        await storage
-            .bucket(bucketName)
-            .file(srcFileName)
-            .download(options);
+storage.getBuckets()
 
-        `gs://${bucketName}/${srcFileName} downloaded to ${destFileName}.`
+async function downloadJSON() {
+    const options = {
+        destination: './download.json'
     }
-    downloadJSONFile().catch(console.error);
+
+    await storage
+        .bucket(bucketName)
+        .file(srcFileName)
+        .download(options)
 }
-//download();
+
+downloadJSON();
