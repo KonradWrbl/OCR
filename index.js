@@ -1,13 +1,67 @@
 const express = require('express');
-const data = require('./pdfoutput-1-to-18.json')
+const data = require('./download.json')
 const {Storage} = require('@google-cloud/storage');
 const quickstart = require('./methods/example.js')
 const OCR = require('./methods/ocr.js')
 const downloadJSON = require('./methods/downloadFile.js')
+const http = require('http')
+const upload = require('express-fileupload')
+const uploadFile = require('./methods/uploadFile.js')
 
 
 const app = express();
 app.listen(5000, '127.0.0.1', () => console.log('server running'));
+
+app.use(upload())
+
+app.get('/', (req,res) => {
+    res.sendFile(__dirname+'/index.html')
+})
+
+app.post('/', (req, res) => {
+    console.log(req.files);
+    if(req.files){
+        const file = req.files.filename;
+        const filename = req.files.filename.name;
+        file.mv('./KRUS.pdf', err => {
+            // if (err) {
+            //     console.log(err);
+            //     res.send('error')
+            // }
+            // else {
+            //     res.send('Done!')
+            // }
+        })
+    }
+
+    async function start() {
+        await quickstart();
+        //await uploadFile();
+        await OCR();
+        await downloadJSON();
+
+        let text = '';
+            for(let i of data.responses) {
+                //console.log(i.fullTextAnnotation.text);
+                //console.log(' ');
+                text += i.fullTextAnnotation.text
+                text += ' '
+            }
+            console.log('texting...');
+            //app.get('/', (req, res) => res.send(text))
+            res.send(text)
+            }
+    start();
+    // let text = '';
+    // for(let i of data.responses) {
+    //     //console.log(i.fullTextAnnotation.text);
+    //     //console.log(' ');
+    //     text += i.fullTextAnnotation.text
+    //     text += ' '
+    // }
+    // res.send(text)
+})
+
 //const {Storage} = require('@google-cloud/storage');
 //const form = document.querySelector('form')
 
@@ -42,20 +96,24 @@ app.listen(5000, '127.0.0.1', () => console.log('server running'));
 
 // })
 
-quickstart();
 
-OCR();
 
-downloadJSON();
 
-let text = '';
-for(let i of data.responses) {
-    //console.log(i.fullTextAnnotation.text);
-    //console.log(' ');
-    text += i.fullTextAnnotation.text
-    text += ' '
-}
-app.get('/', (req, res) => res.send(text))
+
+// quickstart();
+
+// OCR();
+
+// downloadJSON();
+
+// let text = '';
+// for(let i of data.responses) {
+//     //console.log(i.fullTextAnnotation.text);
+//     //console.log(' ');
+//     text += i.fullTextAnnotation.text
+//     text += ' '
+// }
+// app.get('/', (req, res) => res.send(text))
 
 
 

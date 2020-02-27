@@ -8,7 +8,7 @@ module.exports = async function downloadJSON() {
         projectId: 'stable-sign-269418'
     });
     const bucketName = 'pci_test';
-    const srcFileName = 'pdfoutput-1-to-18.json';
+    const srcFileName = 'pdfoutput-1-to-20.json';
 
     storage.getBuckets()
 
