@@ -7,7 +7,7 @@ module.exports = async function OCR() {
     console.log('ocr started');
 
     const gcsSourceUri = 'gs://pci_test/KRUS.pdf';
-    const gcsDestinationUri = 'gs://pci_test/pdf'
+    const gcsDestinationUri = 'gs://pci_test/a'
 
     const inputConfig = {
         mimeType: 'application/pdf',

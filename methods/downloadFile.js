@@ -7,8 +7,11 @@ module.exports = async function downloadJSON() {
         keyFilename: 'APIKey.json',
         projectId: 'stable-sign-269418'
     });
+
+    const regExp = '/^pdfoutput/'
+
     const bucketName = 'pci_test';
-    const srcFileName = 'pdfoutput-1-to-20.json';
+    //const srcFileName = 'aoutput-1-to-20.json';
 
     storage.getBuckets()
 
@@ -16,9 +19,22 @@ module.exports = async function downloadJSON() {
         destination: './download.json'
     }
 
-    await storage
-        .bucket(bucketName)
-        .file(srcFileName)
-        .download(options)
-    console.log('dowloaded')
+    let srcFileName;
+    
+    
+    const bucket = storage.bucket('pci_test');
+    bucket.getFiles(async function(err, files) {
+        if (!err) {
+            console.log(files[1].name);
+            await storage
+                .bucket(bucketName)
+                .file(files[1].name)
+                .download(options)
+            console.log('dowloaded')
+        }
+    });
+
+    
+
+    // bucket.getMetadata(function(err, metadata, apiResponse) {console.log(apiResponse);});
 }

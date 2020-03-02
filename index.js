@@ -1,5 +1,5 @@
 const express = require('express');
-const data = require('./download.json')
+
 const {Storage} = require('@google-cloud/storage');
 const quickstart = require('./methods/example.js')
 const OCR = require('./methods/ocr.js')
@@ -7,6 +7,7 @@ const downloadJSON = require('./methods/downloadFile.js')
 const http = require('http')
 const upload = require('express-fileupload')
 const uploadFile = require('./methods/uploadFile.js')
+const deleteFiles = require('./methods/deleteFiles.js')
 
 
 const app = express();
@@ -19,11 +20,12 @@ app.get('/', (req,res) => {
 })
 
 app.post('/', (req, res) => {
+    let filename
     console.log(req.files);
     if(req.files){
         const file = req.files.filename;
-        const filename = req.files.filename.name;
-        file.mv('./KRUS.pdf', err => {
+        filename = req.files.filename.name;
+        file.mv(filename, err => {
             // if (err) {
             //     console.log(err);
             //     res.send('error')
@@ -33,12 +35,15 @@ app.post('/', (req, res) => {
             // }
         })
     }
+    console.log(filename);
 
     async function start() {
         await quickstart();
-        //await uploadFile();
+        await deleteFiles();
+        await uploadFile(filename);
         await OCR();
         await downloadJSON();
+        const data = require('./download.json')
 
         let text = '';
             for(let i of data.responses) {
