@@ -1,5 +1,6 @@
-module.exports = async function downloadJSON() {
+module.exports = async function downloadJSON(res) {
     const {Storage} = require('@google-cloud/storage');
+    const showText = require('./showText')
 
     console.log('downloading')
 
@@ -7,8 +8,6 @@ module.exports = async function downloadJSON() {
         keyFilename: 'APIKey.json',
         projectId: 'stable-sign-269418'
     });
-
-    const regExp = '/^pdfoutput/'
 
     const bucketName = 'pci_test';
     //const srcFileName = 'aoutput-1-to-20.json';
@@ -18,9 +17,6 @@ module.exports = async function downloadJSON() {
     const options = {
         destination: './download.json'
     }
-
-    let srcFileName;
-    
     
     const bucket = storage.bucket('pci_test');
     bucket.getFiles(async function(err, files) {
@@ -30,11 +26,13 @@ module.exports = async function downloadJSON() {
                 .bucket(bucketName)
                 .file(files[1].name)
                 .download(options)
-            console.log('dowloaded')
+                .then(() => {
+                    const data = require('../download.json')
+                    console.log('dowloaded')
+                    showText(data, res)
+                })
+            
         }
     });
-
-    
-
     // bucket.getMetadata(function(err, metadata, apiResponse) {console.log(apiResponse);});
 }

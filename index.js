@@ -8,6 +8,8 @@ const http = require('http')
 const upload = require('express-fileupload')
 const uploadFile = require('./methods/uploadFile.js')
 const deleteFiles = require('./methods/deleteFiles.js')
+const showText = require('./methods/showText')
+
 
 
 const app = express();
@@ -37,25 +39,19 @@ app.post('/', (req, res) => {
     }
     console.log(filename);
 
+    const contractor = new RegExp('wykonawc')
+
     async function start() {
         await quickstart();
         await deleteFiles();
         await uploadFile(filename);
         await OCR();
-        await downloadJSON();
-        const data = require('./download.json')
-
-        let text = '';
-            for(let i of data.responses) {
-                //console.log(i.fullTextAnnotation.text);
-                //console.log(' ');
-                text += i.fullTextAnnotation.text
-                text += ' '
-            }
-            console.log('texting...');
-            //app.get('/', (req, res) => res.send(text))
-            res.send(text)
-            }
+        await downloadJSON(res);
+        //const data = require('./download.json')
+        //await showText(data, res);
+        
+    }
+        
     start();
     // let text = '';
     // for(let i of data.responses) {
